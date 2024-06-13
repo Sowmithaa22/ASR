@@ -1,0 +1,7 @@
+Commands for Handling shell_scipt tasks
+1. sbatch shell_scipt
+# pushes the shell_scipt in a queue and assigns a task
+2. squeue -u username
+#lists all the processes in queue
+3. scancel process_id
+#cancels the job
