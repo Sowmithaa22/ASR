@@ -1,0 +1,26 @@
+def extract_utterance_ids_from_combined_file(combined_file_path):
+    """Extract utterance IDs from the combined output file."""
+    extracted_utterance_ids = []
+    with open(combined_file_path, 'r') as file:
+        for line in file:
+            utterance_id = line.split('\t')[0]
+            extracted_utterance_ids.append(utterance_id)
+    return extracted_utterance_ids
+
+def save_extracted_utterance_ids(extracted_utterance_ids, output_file_path):
+    """Save the extracted utterance IDs to a specified file in the desired format."""
+    with open(output_file_path, 'w') as output_file:
+        for utterance_id in extracted_utterance_ids:
+            output_file.write(f"{utterance_id}\t{utterance_id}\n")
+
+# Example file paths (replace with your actual file paths)
+combined_output_file_path = '/nlsasfs/home/nltm-pilot/malavika/Sowmithaa/Tamil_Units/data/asr2/utt_km.txt'
+extracted_utterance_ids_file_path = '/nlsasfs/home/nltm-pilot/malavika/Sowmithaa/Tamil_Units/data/train/utt2spk'
+
+# Extract utterance IDs from the combined output file
+extracted_utterance_ids = extract_utterance_ids_from_combined_file(combined_output_file_path)
+
+# Save the extracted utterance IDs to another file in the desired format
+save_extracted_utterance_ids(extracted_utterance_ids, extracted_utterance_ids_file_path)
+
+print(f"Extracted utterance IDs saved to {extracted_utterance_ids_file_path}")
