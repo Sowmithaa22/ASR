@@ -1,0 +1,1028 @@
+# python3 -m espnet2.bin.mt_train --use_preprocessor true --bpemodel data/token_list/tgt_bpe_unigram5000_ts_en/bpe.model --token_type bpe --token_list data/token_list/tgt_bpe_unigram5000_ts_en/tokens.txt --src_bpemodel data/token_list/src_bpe_unigram6000_rm_wavlm_large_21_km500/bpe.model --src_token_type bpe --src_token_list data/token_list/src_bpe_unigram6000_rm_wavlm_large_21_km500/tokens.txt --non_linguistic_symbols none --cleaner none --g2p none --valid_data_path_and_name_and_type dump/raw/dev/text.ts.en,text,text --valid_data_path_and_name_and_type dump/raw/dev/text.rm.wavlm_large_21_km500,src_text,text --valid_shape_file exp/asr_stats_raw_rm_wavlm_large_21_km500_bpe6000_bpe5000/valid/text_shape.bpe --valid_shape_file exp/asr_stats_raw_rm_wavlm_large_21_km500_bpe6000_bpe5000/valid/src_text_shape.bpe --resume true --ignore_init_mismatch false --fold_length 150 --fold_length 150 --output_dir exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000 --config conf/tuning/train_discrete_asr_e_branchformer1.yaml --train_data_path_and_name_and_type dump/raw/train_clean_100/text.rm.wavlm_large_21_km500,src_text,text --train_data_path_and_name_and_type dump/raw/train_clean_100/text.ts.en,text,text --train_shape_file exp/asr_stats_raw_rm_wavlm_large_21_km500_bpe6000_bpe5000/train/src_text_shape.bpe --train_shape_file exp/asr_stats_raw_rm_wavlm_large_21_km500_bpe6000_bpe5000/train/text_shape.bpe --ngpu 2 --multiprocessing_distributed True 
+# Started at Mon Jun 10 15:15:57 IST 2024
+#
+/speech/sowmitha/clean_espnet/espnet/tools/anaconda/envs/espnet/bin/python3 /speech/sowmitha/clean_espnet/espnet/espnet2/bin/mt_train.py --use_preprocessor true --bpemodel data/token_list/tgt_bpe_unigram5000_ts_en/bpe.model --token_type bpe --token_list data/token_list/tgt_bpe_unigram5000_ts_en/tokens.txt --src_bpemodel data/token_list/src_bpe_unigram6000_rm_wavlm_large_21_km500/bpe.model --src_token_type bpe --src_token_list data/token_list/src_bpe_unigram6000_rm_wavlm_large_21_km500/tokens.txt --non_linguistic_symbols none --cleaner none --g2p none --valid_data_path_and_name_and_type dump/raw/dev/text.ts.en,text,text --valid_data_path_and_name_and_type dump/raw/dev/text.rm.wavlm_large_21_km500,src_text,text --valid_shape_file exp/asr_stats_raw_rm_wavlm_large_21_km500_bpe6000_bpe5000/valid/text_shape.bpe --valid_shape_file exp/asr_stats_raw_rm_wavlm_large_21_km500_bpe6000_bpe5000/valid/src_text_shape.bpe --resume true --ignore_init_mismatch false --fold_length 150 --fold_length 150 --output_dir exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000 --config conf/tuning/train_discrete_asr_e_branchformer1.yaml --train_data_path_and_name_and_type dump/raw/train_clean_100/text.rm.wavlm_large_21_km500,src_text,text --train_data_path_and_name_and_type dump/raw/train_clean_100/text.ts.en,text,text --train_shape_file exp/asr_stats_raw_rm_wavlm_large_21_km500_bpe6000_bpe5000/train/src_text_shape.bpe --train_shape_file exp/asr_stats_raw_rm_wavlm_large_21_km500_bpe6000_bpe5000/train/text_shape.bpe --ngpu 2 --multiprocessing_distributed True
+[gpu11:0/2] 2024-06-10 15:16:13,435 (mt:346) INFO: Vocabulary size: 5000
+[gpu11:0/2] 2024-06-10 15:16:13,437 (mt:360) INFO: Source vocabulary size: 6000
+[gpu11:0/2] 2024-06-10 15:16:14,098 (abs_task:1308) INFO: pytorch.version=2.1.0, cuda.available=True, cudnn.version=8902, cudnn.benchmark=False, cudnn.deterministic=True
+[gpu11:0/2] 2024-06-10 15:16:14,106 (abs_task:1309) INFO: Model structure:
+ESPnetDiscreteASRModel(
+  (frontend): Embedding(
+    (embed): Sequential(
+      (0): Embedding(6000, 512)
+      (1): PositionalEncoding(
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+    )
+  )
+  (encoder): EBranchformerEncoder(
+    (embed): Conv1dSubsampling2(
+      (conv): Sequential(
+        (0): Conv1d(512, 256, kernel_size=(3,), stride=(1,))
+        (1): ReLU()
+        (2): Conv1d(256, 256, kernel_size=(3,), stride=(2,))
+        (3): ReLU()
+      )
+      (out): Sequential(
+        (0): Linear(in_features=256, out_features=256, bias=True)
+        (1): RelPositionalEncoding(
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+    (encoders): MultiSequential(
+      (0): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (1): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (2): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (3): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (4): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (5): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (6): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (7): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (8): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (9): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (10): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+      (11): EBranchformerEncoderLayer(
+        (attn): RelPositionMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (linear_pos): Linear(in_features=256, out_features=256, bias=False)
+        )
+        (cgmlp): ConvolutionalGatingMLP(
+          (channel_proj1): Sequential(
+            (0): Linear(in_features=256, out_features=1024, bias=True)
+            (1): GELU(approximate='none')
+          )
+          (csgu): ConvolutionalSpatialGatingUnit(
+            (norm): LayerNorm((512,), eps=1e-12, elementwise_affine=True)
+            (conv): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+            (act): Identity()
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (channel_proj2): Linear(in_features=512, out_features=256, bias=True)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (feed_forward_macaron): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=1024, bias=True)
+          (w_2): Linear(in_features=1024, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): Swish()
+        )
+        (norm_ff): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_ff_macaron): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mha): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_mlp): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm_final): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (depthwise_conv_fusion): Conv1d(512, 512, kernel_size=(31,), stride=(1,), padding=(15,), groups=512)
+        (merge_proj): Linear(in_features=512, out_features=256, bias=True)
+      )
+    )
+    (after_norm): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+  )
+  (decoder): TransformerDecoder(
+    (embed): Sequential(
+      (0): Embedding(5000, 256)
+      (1): PositionalEncoding(
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+    )
+    (after_norm): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+    (output_layer): Linear(in_features=256, out_features=5000, bias=True)
+    (decoders): MultiSequential(
+      (0): DecoderLayer(
+        (self_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (src_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm3): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+      (1): DecoderLayer(
+        (self_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (src_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm3): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+      (2): DecoderLayer(
+        (self_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (src_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm3): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+      (3): DecoderLayer(
+        (self_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (src_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm3): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+      (4): DecoderLayer(
+        (self_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (src_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm3): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+      (5): DecoderLayer(
+        (self_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (src_attn): MultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm3): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+    )
+  )
+  (criterion_mt): LabelSmoothingLoss(
+    (criterion): KLDivLoss()
+  )
+  (specaug): SpecAug(
+    (time_mask): MaskAlongAxisVariableMaxWidth(mask_width_ratio_range=[0.0, 0.05], num_mask=10, axis=time)
+  )
+  (ctc): CTC(
+    (ctc_lo): Linear(in_features=256, out_features=5000, bias=True)
+    (ctc_loss): CTCLoss()
+  )
+)
+
+Model summary:
+    Class Name: ESPnetDiscreteASRModel
+    Total Number of model parameters: 40.36 M
+    Number of trainable parameters: 40.36 M (100.0%)
+    Size: 161.45 MB
+    Type: torch.float32
+[gpu11:0/2] 2024-06-10 15:16:14,106 (abs_task:1312) INFO: Optimizer:
+Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    initial_lr: 0.006
+    lr: 4.0000000000000003e-07
+    maximize: False
+    weight_decay: 1e-06
+)
+[gpu11:0/2] 2024-06-10 15:16:14,106 (abs_task:1313) INFO: Scheduler: WarmupLR(warmup_steps=15000)
+[gpu11:0/2] 2024-06-10 15:16:14,106 (abs_task:1322) INFO: Saving the configuration in exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/config.yaml
+[gpu11:0/2] 2024-06-10 15:16:14,730 (abs_task:1702) INFO: [train] dataset:
+ESPnetDataset(
+  src_text: {"path": "dump/raw/train_clean_100/text.rm.wavlm_large_21_km500", "type": "text"}
+  text: {"path": "dump/raw/train_clean_100/text.ts.en", "type": "text"}
+  preprocess: <espnet2.train.preprocessor.MutliTokenizerCommonPreprocessor object at 0x7fbe279f22e0>)
+[gpu11:0/2] 2024-06-10 15:16:14,730 (abs_task:1703) INFO: [train] Batch sampler: NumElementsBatchSampler(N-batch=79, batch_bins=450000000, sort_in_batch=descending, sort_batch=descending)
+[gpu11:0/2] 2024-06-10 15:16:14,731 (abs_task:1704) INFO: [train] mini-batch sizes summary: N-batch=79, mean=361.3, min=198, max=1125
+[gpu11:0/2] 2024-06-10 15:16:14,777 (abs_task:1702) INFO: [valid] dataset:
+ESPnetDataset(
+  text: {"path": "dump/raw/dev/text.ts.en", "type": "text"}
+  src_text: {"path": "dump/raw/dev/text.rm.wavlm_large_21_km500", "type": "text"}
+  preprocess: <espnet2.train.preprocessor.MutliTokenizerCommonPreprocessor object at 0x7fbe279f2700>)
+[gpu11:0/2] 2024-06-10 15:16:14,777 (abs_task:1703) INFO: [valid] Batch sampler: NumElementsBatchSampler(N-batch=12, batch_bins=450000000, sort_in_batch=descending, sort_batch=descending)
+[gpu11:0/2] 2024-06-10 15:16:14,777 (abs_task:1704) INFO: [valid] mini-batch sizes summary: N-batch=12, mean=462.6, min=131, max=948
+[gpu11:0/2] 2024-06-10 15:16:14,800 (abs_task:1702) INFO: [plot_att] dataset:
+ESPnetDataset(
+  text: {"path": "dump/raw/dev/text.ts.en", "type": "text"}
+  src_text: {"path": "dump/raw/dev/text.rm.wavlm_large_21_km500", "type": "text"}
+  preprocess: <espnet2.train.preprocessor.MutliTokenizerCommonPreprocessor object at 0x7fbe279f26d0>)
+[gpu11:0/2] 2024-06-10 15:16:14,800 (abs_task:1703) INFO: [plot_att] Batch sampler: UnsortedBatchSampler(N-batch=5551, batch_size=1, key_file=exp/asr_stats_raw_rm_wavlm_large_21_km500_bpe6000_bpe5000/valid/text_shape.bpe, 
+[gpu11:0/2] 2024-06-10 15:16:14,800 (abs_task:1704) INFO: [plot_att] mini-batch sizes summary: N-batch=1, mean=1.0, min=1, max=1
+[gpu11:0/2] 2024-06-10 15:16:15,316 (trainer:174) INFO: The training was resumed using exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/checkpoint.pth
+gpu11:60059:60059 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to ^lo,docker,virbr,vmnet,vboxnet
+gpu11:60059:60059 [0] NCCL INFO Bootstrap : Using eno1:10.24.6.120<0>
+gpu11:60059:60059 [0] NCCL INFO NET/Plugin : Plugin load (libnccl-net.so) returned 2 : libnccl-net.so: cannot open shared object file: No such file or directory
+gpu11:60059:60059 [0] NCCL INFO NET/Plugin : No plugin found, using internal implementation
+gpu11:60059:60059 [0] NCCL INFO cudaDriverVersion 12010
+NCCL version 2.18.5+cuda12.1
+gpu11:60060:60060 [1] NCCL INFO cudaDriverVersion 12010
+gpu11:60060:60060 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to ^lo,docker,virbr,vmnet,vboxnet
+gpu11:60060:60060 [1] NCCL INFO Bootstrap : Using eno1:10.24.6.120<0>
+gpu11:60060:60060 [1] NCCL INFO NET/Plugin : Plugin load (libnccl-net.so) returned 2 : libnccl-net.so: cannot open shared object file: No such file or directory
+gpu11:60060:60060 [1] NCCL INFO NET/Plugin : No plugin found, using internal implementation
+gpu11:60060:60089 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to ^lo,docker,virbr,vmnet,vboxnet
+gpu11:60060:60089 [1] NCCL INFO NET/IB : No device found.
+gpu11:60060:60089 [1] NCCL INFO NCCL_SOCKET_IFNAME set by environment to ^lo,docker,virbr,vmnet,vboxnet
+gpu11:60060:60089 [1] NCCL INFO NET/Socket : Using [0]eno1:10.24.6.120<0> [1]enxb03af2b6059f:169.254.3.1<0>
+gpu11:60060:60089 [1] NCCL INFO Using network Socket
+gpu11:60060:60089 [1] NCCL INFO comm 0x12fa8060 rank 1 nranks 2 cudaDev 1 nvmlDev 1 busId 25000 commId 0x30a68638a780f382 - Init START
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60060:60089 [1] NCCL INFO Setting affinity for GPU 1 to ff,ffff0000,00ffffff
+gpu11:60060:60089 [1] NCCL INFO Trees [0] -1/-1/-1->1->0 [1] 0/-1/-1->1->-1 [2] -1/-1/-1->1->0 [3] 0/-1/-1->1->-1
+gpu11:60060:60089 [1] NCCL INFO P2P Chunksize set to 131072
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60060:60089 [1] NCCL INFO Channel 00 : 1[1] -> 0[0] via SHM/direct/direct
+gpu11:60060:60089 [1] NCCL INFO P2P is dgpu11:60059:60088 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to ^lo,docker,virbr,vmnet,vboxnet
+gpu11:60059:60088 [0] NCCL INFO NET/IB : No device found.
+gpu11:60059:60088 [0] NCCL INFO NCCL_SOCKET_IFNAME set by environment to ^lo,docker,virbr,vmnet,vboxnet
+gpu11:60059:60088 [0] NCCL INFO NET/Socket : Using [0]eno1:10.24.6.120<0> [1]enxb03af2b6059f:169.254.3.1<0>
+gpu11:60059:60088 [0] NCCL INFO Using network Socket
+gpu11:60059:60088 [0] NCCL INFO comm 0x9649000 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 1000 commId 0x30a68638a780f382 - Init START
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60059:60088 [0] NCCL INFO Setting affinity for GPU 0 to ff,ffff0000,00ffffff
+gpu11:60059:60088 [0] NCCL INFO Channel 00/04 :    0   1
+gpu11:60059:60088 [0] NCCL INFO Channel 01/04 :    0   1
+gpu11:60059:60088 [0] NCCL INFO Channel 02/04 :    0   1
+gpu11:60059:60088 [0] NCCL INFO Channel 03/04 :    0   1
+gpu11:60059:60088 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] -1/-1/-1->0->1 [2] 1/-1/-1->0->-1 [3] -1/-1/-1->0->1
+gpu11:60059:60088 [0] NCCL INFO P2P Chunksize set to 131072
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60059:60088 [0] NCCL INFO Channel 00 : 0[0] -> 1[1] via SHM/direct/direct
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60059:60088 [0] NCCL INFO Channel 01 : 0[0] -> 1[1] via S[gpu11:0/2] 2024-06-10 15:16:16,657 (trainer:311) INFO: 36/70epoch started
+HM/direct/direct
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60059:60088 [0] NCCL INFO Channel 02 : 0[0] -> 1[1] via SHM/direct/direct
+gpu11:60059:60088 [0] NCCL INFO P2P is disabled between connected GPUs 0 and 1. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60059:60088 [0] NCCL INFO Could not enable P2P between dev 0(=1000) and dev 1(=25000)
+gpu11:60059:60088 [0] NCCL INFO Channel 03 : 0[0] -> 1[1] via SHM/direct/direct
+gpu11:60059:60088 [0] NCCL INFO Connected all rings
+gpu11:60059:60088 [0] NCCL INFO Connected all trees
+gpu11:60059:60088 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+gpu11:60059:60088 [0] NCCL INFO 4 coll channels, 0 nvls channels, 4 p2p channels, 2 p2p channels per peer
+gpu11:60059:60088 [0] NCCL INFO comm 0x9649000 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 1000 commId 0x30a68638a780f382 - Init COMPLETE
+isabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60060:60089 [1] NCCL INFO Channel 01 : 1[1] -> 0[0] via SHM/direct/direct
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60060:60089 [1] NCCL INFO Channel 02 : 1[1] -> 0[0] via SHM/direct/direct
+gpu11:60060:60089 [1] NCCL INFO P2P is disabled between connected GPUs 1 and 0. You can repress this message with NCCL_IGNORE_DISABLED_P2P=1.
+gpu11:60060:60089 [1] NCCL INFO Could not enable P2P between dev 1(=25000) and dev 0(=1000)
+gpu11:60060:60089 [1] NCCL INFO Channel 03 : 1[1] -> 0[0] via SHM/direct/direct
+gpu11:60060:60089 [1] NCCL INFO Connected all rings
+gpu11:60060:60089 [1] NCCL INFO Connected all trees
+gpu11:60060:60089 [1] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+gpu11:60060:60089 [1] NCCL INFO 4 coll channels, 0 nvls channels, 4 p2p channels, 2 p2p channels per peer
+gpu11:60060:60089 [1] NCCL INFO comm 0x12fa8060 rank 1 nranks 2 cudaDev 1 nvmlDev 1 busId 25000 commId 0x30a68638a780f382 - Init COMPLETE
+[gpu11:0/2] 2024-06-10 15:20:00,159 (trainer:365) INFO: 36epoch results: [train] iter_time=0.003, forward_time=0.156, loss_ctc=71.177, loss_att=54.851, acc=0.756, loss=59.749, backward_time=0.198, grad_norm=23.973, clip=100.000, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.001, train_time=1.173, time=1 minute and 33.5 seconds, total_count=2844, gpu_max_cached_mem_GB=18.195, [valid] loss_ctc=24.302, cer_ctc=0.073, loss_att=16.994, acc=0.880, cer=0.073, wer=0.762, loss=19.186, time=1 minute and 1.21 seconds, total_count=432, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.78 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 15:20:03,126 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 15:20:03,143 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/26epoch.pth
+[gpu11:0/2] 2024-06-10 15:20:03,143 (trainer:299) INFO: 37/70epoch started. Estimated time to finish: 2 hours, 8 minutes and 20.53 seconds
+[gpu11:0/2] 2024-06-10 15:23:48,671 (trainer:365) INFO: 37epoch results: [train] iter_time=0.003, forward_time=0.146, loss_ctc=69.897, loss_att=53.415, acc=0.763, loss=58.359, backward_time=0.198, grad_norm=23.157, clip=98.734, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.001, train_time=1.165, time=1 minute and 33.07 seconds, total_count=2923, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=24.497, cer_ctc=0.076, loss_att=17.251, acc=0.877, cer=0.076, wer=0.761, loss=19.425, time=1 minute and 2.26 seconds, total_count=444, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 10.19 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 15:23:51,763 (trainer:431) INFO: There are no improvements in this epoch
+[gpu11:0/2] 2024-06-10 15:23:51,779 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/27epoch.pth
+[gpu11:0/2] 2024-06-10 15:23:51,780 (trainer:299) INFO: 38/70epoch started. Estimated time to finish: 2 hours, 5 minutes and 9.53 seconds
+[gpu11:0/2] 2024-06-10 15:27:35,137 (trainer:365) INFO: 38epoch results: [train] iter_time=0.003, forward_time=0.147, loss_ctc=68.129, loss_att=51.700, acc=0.768, loss=56.629, backward_time=0.196, grad_norm=20.115, clip=98.734, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.001, train_time=1.163, time=1 minute and 32.82 seconds, total_count=3002, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=23.212, cer_ctc=0.071, loss_att=16.079, acc=0.885, cer=0.070, wer=0.747, loss=18.219, time=1 minute and 1.77 seconds, total_count=456, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.76 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 15:27:37,998 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 15:27:38,019 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/28epoch.pth
+[gpu11:0/2] 2024-06-10 15:27:38,020 (trainer:299) INFO: 39/70epoch started. Estimated time to finish: 2 hours, 1 minute and 7.87 seconds
+[gpu11:0/2] 2024-06-10 15:31:20,372 (trainer:365) INFO: 39epoch results: [train] iter_time=0.003, forward_time=0.145, loss_ctc=66.956, loss_att=50.269, acc=0.775, loss=55.275, backward_time=0.197, grad_norm=19.699, clip=98.734, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.001, train_time=1.155, time=1 minute and 32.15 seconds, total_count=3081, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=22.745, cer_ctc=0.069, loss_att=15.654, acc=0.889, cer=0.068, wer=0.741, loss=17.781, time=1 minute and 1.4 seconds, total_count=468, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.8 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 15:31:23,444 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 15:31:23,460 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/29epoch.pth
+[gpu11:0/2] 2024-06-10 15:31:23,460 (trainer:299) INFO: 40/70epoch started. Estimated time to finish: 1 hour, 57 minutes and 7.72 seconds
+[gpu11:0/2] 2024-06-10 15:35:07,832 (trainer:365) INFO: 40epoch results: [train] iter_time=0.003, forward_time=0.145, loss_ctc=65.954, loss_att=49.343, acc=0.779, loss=54.327, backward_time=0.196, grad_norm=18.872, clip=98.734, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.001, train_time=1.164, time=1 minute and 32.92 seconds, total_count=3160, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=21.970, cer_ctc=0.067, loss_att=15.282, acc=0.892, cer=0.065, wer=0.730, loss=17.288, time=1 minute and 3.92 seconds, total_count=480, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 7.52 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 15:35:10,964 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 15:35:10,981 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/30epoch.pth
+[gpu11:0/2] 2024-06-10 15:35:10,981 (trainer:299) INFO: 41/70epoch started. Estimated time to finish: 1 hour, 53 minutes and 25.95 seconds
+[gpu11:0/2] 2024-06-10 15:38:54,555 (trainer:365) INFO: 41epoch results: [train] iter_time=0.003, forward_time=0.144, loss_ctc=64.852, loss_att=48.320, acc=0.784, loss=53.279, backward_time=0.197, grad_norm=18.400, clip=98.734, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.001, train_time=1.159, time=1 minute and 32.53 seconds, total_count=3239, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=21.246, cer_ctc=0.064, loss_att=14.752, acc=0.895, cer=0.063, wer=0.721, loss=16.701, time=1 minute and 2.62 seconds, total_count=492, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.42 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 15:38:57,577 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 15:38:57,595 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/31epoch.pth
+[gpu11:0/2] 2024-06-10 15:38:57,595 (trainer:299) INFO: 42/70epoch started. Estimated time to finish: 1 hour, 49 minutes and 37.87 seconds
+[gpu11:0/2] 2024-06-10 15:42:41,170 (trainer:365) INFO: 42epoch results: [train] iter_time=0.003, forward_time=0.145, loss_ctc=63.861, loss_att=47.363, acc=0.787, loss=52.312, backward_time=0.198, grad_norm=17.606, clip=98.734, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.001, train_time=1.160, time=1 minute and 32.54 seconds, total_count=3318, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=21.492, cer_ctc=0.064, loss_att=14.668, acc=0.897, cer=0.063, wer=0.716, loss=16.715, time=1 minute and 2.59 seconds, total_count=504, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.45 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 15:42:44,082 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 15:42:44,098 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/32epoch.pth
+[gpu11:0/2] 2024-06-10 15:42:44,098 (trainer:299) INFO: 43/70epoch started. Estimated time to finish: 1 hour, 45 minutes and 49.77 seconds
+[gpu11:0/2] 2024-06-10 15:46:27,233 (trainer:365) INFO: 43epoch results: [train] iter_time=0.003, forward_time=0.147, loss_ctc=62.806, loss_att=46.482, acc=0.791, loss=51.379, backward_time=0.197, grad_norm=17.504, clip=98.734, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.001, train_time=1.161, time=1 minute and 32.64 seconds, total_count=3397, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=20.516, cer_ctc=0.063, loss_att=14.062, acc=0.899, cer=0.061, wer=0.711, loss=15.998, time=1 minute and 3.6 seconds, total_count=516, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 6.89 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 15:46:30,370 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 15:46:30,386 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/33epoch.pth
+[gpu11:0/2] 2024-06-10 15:46:30,387 (trainer:299) INFO: 44/70epoch started. Estimated time to finish: 1 hour, 42 minutes and 1.34 seconds
+[gpu11:0/2] 2024-06-10 15:50:11,466 (trainer:365) INFO: 44epoch results: [train] iter_time=0.003, forward_time=0.144, loss_ctc=62.328, loss_att=45.916, acc=0.793, loss=50.840, backward_time=0.196, grad_norm=17.709, clip=98.734, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.001, train_time=1.160, time=1 minute and 32.49 seconds, total_count=3476, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=20.440, cer_ctc=0.062, loss_att=13.826, acc=0.902, cer=0.059, wer=0.705, loss=15.810, time=1 minute and 1.23 seconds, total_count=528, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 7.35 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 15:50:14,420 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 15:50:14,436 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/34epoch.pth
+[gpu11:0/2] 2024-06-10 15:50:14,437 (trainer:299) INFO: 45/70epoch started. Estimated time to finish: 1 hour, 38 minutes and 6.92 seconds
+[gpu11:0/2] 2024-06-10 15:53:58,922 (trainer:365) INFO: 45epoch results: [train] iter_time=0.003, forward_time=0.144, loss_ctc=61.307, loss_att=45.159, acc=0.797, loss=50.004, backward_time=0.197, grad_norm=17.498, clip=98.734, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.001, train_time=1.158, time=1 minute and 32.44 seconds, total_count=3555, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=20.258, cer_ctc=0.059, loss_att=13.876, acc=0.902, cer=0.059, wer=0.697, loss=15.791, time=1 minute and 2.24 seconds, total_count=540, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 9.8 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 15:54:01,847 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 15:54:01,864 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/35epoch.pth
+[gpu11:0/2] 2024-06-10 15:54:01,864 (trainer:299) INFO: 46/70epoch started. Estimated time to finish: 1 hour, 34 minutes and 23.02 seconds
+[gpu11:0/2] 2024-06-10 15:57:46,895 (trainer:365) INFO: 46epoch results: [train] iter_time=0.003, forward_time=0.144, loss_ctc=60.473, loss_att=44.405, acc=0.800, loss=49.225, backward_time=0.196, grad_norm=15.540, clip=97.468, loss_scale=1.311e+05, optim_step_time=0.027, optim0_lr0=0.001, train_time=1.167, time=1 minute and 33.19 seconds, total_count=3634, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=20.015, cer_ctc=0.059, loss_att=13.455, acc=0.904, cer=0.057, wer=0.699, loss=15.423, time=1 minute and 1.65 seconds, total_count=552, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 10.18 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 15:57:50,051 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 15:57:50,068 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/37epoch.pth
+[gpu11:0/2] 2024-06-10 15:57:50,068 (trainer:299) INFO: 47/70epoch started. Estimated time to finish: 1 hour, 30 minutes and 40.17 seconds
+[gpu11:0/2] 2024-06-10 16:01:33,062 (trainer:365) INFO: 47epoch results: [train] iter_time=0.003, forward_time=0.144, loss_ctc=59.940, loss_att=43.863, acc=0.802, loss=48.686, backward_time=0.196, grad_norm=16.344, clip=97.468, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.001, train_time=1.158, time=1 minute and 32.47 seconds, total_count=3713, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=19.863, cer_ctc=0.061, loss_att=13.320, acc=0.904, cer=0.058, wer=0.694, loss=15.283, time=1 minute and 2.54 seconds, total_count=564, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 7.98 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:01:36,008 (trainer:431) INFO: There are no improvements in this epoch
+[gpu11:0/2] 2024-06-10 16:01:36,023 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/36epoch.pth
+[gpu11:0/2] 2024-06-10 16:01:36,024 (trainer:299) INFO: 48/70epoch started. Estimated time to finish: 1 hour, 26 minutes and 52.12 seconds
+[gpu11:0/2] 2024-06-10 16:05:19,929 (trainer:365) INFO: 48epoch results: [train] iter_time=0.003, forward_time=0.144, loss_ctc=59.313, loss_att=43.188, acc=0.804, loss=48.026, backward_time=0.198, grad_norm=14.314, clip=97.468, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.166, time=1 minute and 33.03 seconds, total_count=3792, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=19.385, cer_ctc=0.057, loss_att=13.316, acc=0.905, cer=0.059, wer=0.690, loss=15.137, time=1 minute and 2.62 seconds, total_count=576, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.24 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:05:22,880 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:05:22,896 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/38epoch.pth
+[gpu11:0/2] 2024-06-10 16:05:22,896 (trainer:299) INFO: 49/70epoch started. Estimated time to finish: 1 hour, 23 minutes and 5.94 seconds
+[gpu11:0/2] 2024-06-10 16:09:06,420 (trainer:365) INFO: 49epoch results: [train] iter_time=0.003, forward_time=0.144, loss_ctc=58.414, loss_att=42.481, acc=0.807, loss=47.261, backward_time=0.196, grad_norm=13.884, clip=96.203, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.159, time=1 minute and 32.51 seconds, total_count=3871, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=19.009, cer_ctc=0.057, loss_att=12.897, acc=0.906, cer=0.056, wer=0.690, loss=14.731, time=1 minute and 2.25 seconds, total_count=588, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.76 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:09:09,562 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:09:09,580 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/39epoch.pth
+[gpu11:0/2] 2024-06-10 16:09:09,580 (trainer:299) INFO: 50/70epoch started. Estimated time to finish: 1 hour, 19 minutes and 19.38 seconds
+[gpu11:0/2] 2024-06-10 16:12:53,557 (trainer:365) INFO: 50epoch results: [train] iter_time=0.003, forward_time=0.144, loss_ctc=58.298, loss_att=42.290, acc=0.808, loss=47.092, backward_time=0.196, grad_norm=13.989, clip=97.468, loss_scale=1.311e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.166, time=1 minute and 33.18 seconds, total_count=3950, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=19.064, cer_ctc=0.058, loss_att=12.947, acc=0.908, cer=0.056, wer=0.678, loss=14.782, time=1 minute and 2.19 seconds, total_count=600, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.61 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:12:56,461 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:12:56,478 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/40epoch.pth
+[gpu11:0/2] 2024-06-10 16:12:56,479 (trainer:299) INFO: 51/70epoch started. Estimated time to finish: 1 hour, 15 minutes and 33.1 seconds
+[gpu11:0/2] 2024-06-10 16:16:41,292 (trainer:365) INFO: 51epoch results: [train] iter_time=0.003, forward_time=0.143, loss_ctc=57.264, loss_att=41.403, acc=0.812, loss=46.161, backward_time=0.197, grad_norm=12.976, clip=96.203, loss_scale=1.792e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.160, time=1 minute and 32.58 seconds, total_count=4029, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=19.018, cer_ctc=0.056, loss_att=12.581, acc=0.909, cer=0.054, wer=0.668, loss=14.512, time=1 minute and 3.61 seconds, total_count=612, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.61 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:16:44,408 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:16:44,424 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/41epoch.pth
+[gpu11:0/2] 2024-06-10 16:16:44,424 (trainer:299) INFO: 52/70epoch started. Estimated time to finish: 1 hour, 11 minutes and 47.97 seconds
+[gpu11:0/2] 2024-06-10 16:20:27,806 (trainer:365) INFO: 52epoch results: [train] iter_time=0.003, forward_time=0.144, loss_ctc=56.896, loss_att=41.006, acc=0.813, loss=45.773, backward_time=0.196, grad_norm=13.482, clip=97.468, loss_scale=2.621e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.159, time=1 minute and 32.5 seconds, total_count=4108, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=18.866, cer_ctc=0.056, loss_att=12.903, acc=0.909, cer=0.056, wer=0.675, loss=14.692, time=1 minute and 2.9 seconds, total_count=624, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 7.97 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:20:31,032 (trainer:431) INFO: There are no improvements in this epoch
+[gpu11:0/2] 2024-06-10 16:20:31,049 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/42epoch.pth
+[gpu11:0/2] 2024-06-10 16:20:31,049 (trainer:299) INFO: 53/70epoch started. Estimated time to finish: 1 hour, 8 minutes and 1.12 seconds
+[gpu11:0/2] 2024-06-10 16:24:15,823 (trainer:365) INFO: 53epoch results: [train] iter_time=0.003, forward_time=0.143, loss_ctc=56.623, loss_att=40.719, acc=0.814, loss=45.490, backward_time=0.196, grad_norm=12.676, clip=96.203, loss_scale=2.621e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.160, time=1 minute and 32.6 seconds, total_count=4187, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.935, cer_ctc=0.054, loss_att=12.193, acc=0.912, cer=0.053, wer=0.660, loss=13.916, time=1 minute and 3.23 seconds, total_count=636, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.94 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:24:18,895 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:24:18,914 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/43epoch.pth
+[gpu11:0/2] 2024-06-10 16:24:18,914 (trainer:299) INFO: 54/70epoch started. Estimated time to finish: 1 hour, 4 minutes and 15.46 seconds
+[gpu11:0/2] 2024-06-10 16:28:05,737 (trainer:365) INFO: 54epoch results: [train] iter_time=0.003, forward_time=0.143, loss_ctc=55.648, loss_att=39.907, acc=0.818, loss=44.630, backward_time=0.197, grad_norm=12.439, clip=96.203, loss_scale=2.621e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.157, time=1 minute and 32.31 seconds, total_count=4266, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=18.355, cer_ctc=0.053, loss_att=12.265, acc=0.912, cer=0.053, wer=0.660, loss=14.092, time=1 minute and 5.66 seconds, total_count=648, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.85 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:28:08,915 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:28:08,932 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/44epoch.pth
+[gpu11:0/2] 2024-06-10 16:28:08,932 (trainer:299) INFO: 55/70epoch started. Estimated time to finish: 1 hour and 31.39 seconds
+[gpu11:0/2] 2024-06-10 16:31:50,492 (trainer:365) INFO: 55epoch results: [train] iter_time=0.003, forward_time=0.144, loss_ctc=55.378, loss_att=39.987, acc=0.817, loss=44.604, backward_time=0.196, grad_norm=14.419, clip=98.734, loss_scale=2.621e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.157, time=1 minute and 32.36 seconds, total_count=4345, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.982, cer_ctc=0.052, loss_att=12.003, acc=0.914, cer=0.052, wer=0.652, loss=13.797, time=1 minute and 1.06 seconds, total_count=660, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.13 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:31:53,701 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:31:53,718 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/45epoch.pth
+[gpu11:0/2] 2024-06-10 16:31:53,719 (trainer:299) INFO: 56/70epoch started. Estimated time to finish: 56 minutes and 42.8 seconds
+[gpu11:0/2] 2024-06-10 16:35:38,996 (trainer:365) INFO: 56epoch results: [train] iter_time=0.004, forward_time=0.144, loss_ctc=55.136, loss_att=39.440, acc=0.821, loss=44.149, backward_time=0.196, grad_norm=11.857, clip=96.203, loss_scale=2.621e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.169, time=1 minute and 33.17 seconds, total_count=4424, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=18.363, cer_ctc=0.053, loss_att=12.001, acc=0.914, cer=0.052, wer=0.658, loss=13.910, time=1 minute and 3.56 seconds, total_count=672, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.54 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:35:41,847 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:35:41,864 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/47epoch.pth
+[gpu11:0/2] 2024-06-10 16:35:41,864 (trainer:299) INFO: 57/70epoch started. Estimated time to finish: 52 minutes and 56.8 seconds
+[gpu11:0/2] 2024-06-10 16:39:28,459 (trainer:365) INFO: 57epoch results: [train] iter_time=0.003, forward_time=0.142, loss_ctc=54.347, loss_att=38.690, acc=0.824, loss=43.387, backward_time=0.197, grad_norm=10.945, clip=96.203, loss_scale=2.621e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.162, time=1 minute and 32.72 seconds, total_count=4503, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.706, cer_ctc=0.052, loss_att=11.689, acc=0.915, cer=0.051, wer=0.651, loss=13.494, time=1 minute and 3.62 seconds, total_count=684, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 10.24 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:39:31,520 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:39:31,536 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/46epoch.pth
+[gpu11:0/2] 2024-06-10 16:39:31,537 (trainer:299) INFO: 58/70epoch started. Estimated time to finish: 49 minutes and 11.52 seconds
+[gpu11:0/2] 2024-06-10 16:43:14,513 (trainer:365) INFO: 58epoch results: [train] iter_time=0.003, forward_time=0.142, loss_ctc=54.331, loss_att=38.586, acc=0.822, loss=43.310, backward_time=0.195, grad_norm=11.269, clip=96.203, loss_scale=2.621e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.160, time=1 minute and 32.72 seconds, total_count=4582, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.926, cer_ctc=0.052, loss_att=11.812, acc=0.914, cer=0.052, wer=0.658, loss=13.646, time=1 minute and 2.63 seconds, total_count=696, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 7.62 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:43:17,612 (trainer:431) INFO: There are no improvements in this epoch
+[gpu11:0/2] 2024-06-10 16:43:17,629 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/48epoch.pth
+[gpu11:0/2] 2024-06-10 16:43:17,629 (trainer:299) INFO: 59/70epoch started. Estimated time to finish: 45 minutes and 23.99 seconds
+[gpu11:0/2] 2024-06-10 16:47:04,104 (trainer:365) INFO: 59epoch results: [train] iter_time=0.003, forward_time=0.142, loss_ctc=53.773, loss_att=38.180, acc=0.825, loss=42.858, backward_time=0.195, grad_norm=11.378, clip=96.203, loss_scale=2.621e+05, optim_step_time=0.025, optim0_lr0=0.002, train_time=1.161, time=1 minute and 32.66 seconds, total_count=4661, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.282, cer_ctc=0.052, loss_att=11.678, acc=0.916, cer=0.050, wer=0.645, loss=13.359, time=1 minute and 5.44 seconds, total_count=708, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.37 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:47:06,985 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:47:07,003 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/49epoch.pth
+[gpu11:0/2] 2024-06-10 16:47:07,003 (trainer:299) INFO: 60/70epoch started. Estimated time to finish: 41 minutes and 38.08 seconds
+[gpu11:0/2] 2024-06-10 16:50:51,040 (trainer:365) INFO: 60epoch results: [train] iter_time=0.003, forward_time=0.142, loss_ctc=53.523, loss_att=38.008, acc=0.824, loss=42.662, backward_time=0.196, grad_norm=10.770, clip=94.937, loss_scale=2.621e+05, optim_step_time=0.025, optim0_lr0=0.002, train_time=1.164, time=1 minute and 32.92 seconds, total_count=4740, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.399, cer_ctc=0.051, loss_att=11.580, acc=0.916, cer=0.051, wer=0.648, loss=13.326, time=1 minute and 3.54 seconds, total_count=720, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 7.57 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:50:54,157 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:50:54,175 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/50epoch.pth
+[gpu11:0/2] 2024-06-10 16:50:54,176 (trainer:299) INFO: 61/70epoch started. Estimated time to finish: 37 minutes and 51.01 seconds
+[gpu11:0/2] 2024-06-10 16:54:35,843 (trainer:365) INFO: 61epoch results: [train] iter_time=0.003, forward_time=0.141, loss_ctc=53.378, loss_att=38.127, acc=0.825, loss=42.702, backward_time=0.195, grad_norm=12.708, clip=94.937, loss_scale=2.621e+05, optim_step_time=0.025, optim0_lr0=0.002, train_time=1.148, time=1 minute and 31.72 seconds, total_count=4819, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.632, cer_ctc=0.050, loss_att=11.532, acc=0.916, cer=0.051, wer=0.648, loss=13.362, time=1 minute and 2.39 seconds, total_count=732, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 7.55 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:54:38,939 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:54:38,956 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/52epoch.pth
+[gpu11:0/2] 2024-06-10 16:54:38,956 (trainer:299) INFO: 62/70epoch started. Estimated time to finish: 34 minutes and 3.1 seconds
+[gpu11:0/2] 2024-06-10 16:58:21,673 (trainer:365) INFO: 62epoch results: [train] iter_time=0.003, forward_time=0.141, loss_ctc=52.894, loss_att=37.318, acc=0.829, loss=41.990, backward_time=0.195, grad_norm=10.224, clip=96.203, loss_scale=2.621e+05, optim_step_time=0.025, optim0_lr0=0.002, train_time=1.159, time=1 minute and 32.49 seconds, total_count=4898, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.616, cer_ctc=0.050, loss_att=11.429, acc=0.917, cer=0.050, wer=0.646, loss=13.285, time=1 minute and 2.61 seconds, total_count=744, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 7.62 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 16:58:24,641 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 16:58:24,660 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/51epoch.pth
+[gpu11:0/2] 2024-06-10 16:58:24,660 (trainer:299) INFO: 63/70epoch started. Estimated time to finish: 30 minutes and 15.7 seconds
+[gpu11:0/2] 2024-06-10 17:03:46,026 (trainer:365) INFO: 63epoch results: [train] iter_time=0.003, forward_time=0.163, loss_ctc=52.632, loss_att=37.085, acc=0.829, loss=41.749, backward_time=0.209, grad_norm=9.898, clip=94.937, loss_scale=2.621e+05, optim_step_time=0.034, optim0_lr0=0.002, train_time=1.223, time=1 minute and 38.99 seconds, total_count=4977, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.147, cer_ctc=0.050, loss_att=11.250, acc=0.917, cer=0.049, wer=0.645, loss=13.019, time=1 minute and 52.48 seconds, total_count=756, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 49.89 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 17:03:49,917 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 17:03:49,941 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/53epoch.pth
+[gpu11:0/2] 2024-06-10 17:03:49,941 (trainer:299) INFO: 64/70epoch started. Estimated time to finish: 26 minutes and 53.32 seconds
+[gpu11:0/2] 2024-06-10 17:08:33,728 (trainer:365) INFO: 64epoch results: [train] iter_time=0.003, forward_time=0.151, loss_ctc=52.434, loss_att=36.890, acc=0.829, loss=41.553, backward_time=0.201, grad_norm=10.301, clip=94.937, loss_scale=2.621e+05, optim_step_time=0.033, optim0_lr0=0.002, train_time=1.578, time=2 minutes and 6.47 seconds, total_count=5056, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.565, cer_ctc=0.051, loss_att=11.490, acc=0.918, cer=0.050, wer=0.640, loss=13.312, time=1 minute and 20.82 seconds, total_count=768, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 16.49 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 17:08:37,025 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 17:08:37,047 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/54epoch.pth
+[gpu11:0/2] 2024-06-10 17:08:37,048 (trainer:299) INFO: 65/70epoch started. Estimated time to finish: 23 minutes and 14.56 seconds
+[gpu11:0/2] 2024-06-10 17:12:23,653 (trainer:365) INFO: 65epoch results: [train] iter_time=0.003, forward_time=0.144, loss_ctc=51.931, loss_att=36.447, acc=0.833, loss=41.092, backward_time=0.194, grad_norm=9.557, clip=94.937, loss_scale=2.621e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.206, time=1 minute and 36.39 seconds, total_count=5135, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=16.930, cer_ctc=0.050, loss_att=11.138, acc=0.918, cer=0.049, wer=0.637, loss=12.876, time=1 minute and 1.94 seconds, total_count=780, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.28 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 17:12:26,524 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 17:12:26,552 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/55epoch.pth
+[gpu11:0/2] 2024-06-10 17:12:26,552 (trainer:299) INFO: 66/70epoch started. Estimated time to finish: 19 minutes and 21.65 seconds
+[gpu11:0/2] 2024-06-10 17:16:41,226 (trainer:365) INFO: 66epoch results: [train] iter_time=0.003, forward_time=0.147, loss_ctc=51.754, loss_att=36.220, acc=0.832, loss=40.880, backward_time=0.197, grad_norm=9.396, clip=94.937, loss_scale=2.621e+05, optim_step_time=0.026, optim0_lr0=0.002, train_time=1.144, time=1 minute and 31.41 seconds, total_count=5214, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.015, cer_ctc=0.048, loss_att=11.315, acc=0.918, cer=0.049, wer=0.637, loss=13.025, time=1 minute and 3 seconds, total_count=792, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 40.26 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 17:16:45,207 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 17:16:45,237 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/56epoch.pth
+[gpu11:0/2] 2024-06-10 17:16:45,238 (trainer:299) INFO: 67/70epoch started. Estimated time to finish: 15 minutes and 32.72 seconds
+[gpu11:0/2] 2024-06-10 17:22:02,991 (trainer:365) INFO: 67epoch results: [train] iter_time=0.005, forward_time=0.158, loss_ctc=51.867, loss_att=36.329, acc=0.832, loss=40.991, backward_time=0.209, grad_norm=9.033, clip=94.937, loss_scale=2.621e+05, optim_step_time=0.034, optim0_lr0=0.002, train_time=1.643, time=2 minutes and 11.89 seconds, total_count=5293, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.260, cer_ctc=0.049, loss_att=11.182, acc=0.918, cer=0.050, wer=0.637, loss=13.005, time=1 minute and 39.18 seconds, total_count=804, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 26.68 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 17:22:06,540 (trainer:431) INFO: There are no improvements in this epoch
+[gpu11:0/2] 2024-06-10 17:22:06,566 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/58epoch.pth
+[gpu11:0/2] 2024-06-10 17:22:06,566 (trainer:299) INFO: 68/70epoch started. Estimated time to finish: 11 minutes and 47.8 seconds
+[gpu11:0/2] 2024-06-10 17:26:02,310 (trainer:365) INFO: 68epoch results: [train] iter_time=0.003, forward_time=0.148, loss_ctc=51.176, loss_att=35.864, acc=0.834, loss=40.458, backward_time=0.195, grad_norm=9.881, clip=96.203, loss_scale=2.621e+05, optim_step_time=0.029, optim0_lr0=0.002, train_time=1.309, time=1 minute and 44.6 seconds, total_count=5372, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.074, cer_ctc=0.048, loss_att=11.117, acc=0.920, cer=0.048, wer=0.625, loss=12.904, time=1 minute and 3.04 seconds, total_count=816, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.1 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 17:26:05,190 (trainer:433) INFO: The best model has been updated: valid.acc
+[gpu11:0/2] 2024-06-10 17:26:05,216 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/57epoch.pth
+[gpu11:0/2] 2024-06-10 17:26:05,216 (trainer:299) INFO: 69/70epoch started. Estimated time to finish: 7 minutes and 52.03 seconds
+[gpu11:0/2] 2024-06-10 17:29:49,371 (trainer:365) INFO: 69epoch results: [train] iter_time=0.003, forward_time=0.147, loss_ctc=50.881, loss_att=35.543, acc=0.834, loss=40.144, backward_time=0.196, grad_norm=9.236, clip=93.671, loss_scale=2.621e+05, optim_step_time=0.025, optim0_lr0=0.002, train_time=1.168, time=1 minute and 33.36 seconds, total_count=5451, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.080, cer_ctc=0.048, loss_att=11.019, acc=0.920, cer=0.048, wer=0.630, loss=12.838, time=1 minute and 2.78 seconds, total_count=828, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 8.01 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 17:29:52,780 (trainer:431) INFO: There are no improvements in this epoch
+[gpu11:0/2] 2024-06-10 17:29:52,798 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/59epoch.pth
+[gpu11:0/2] 2024-06-10 17:29:52,798 (trainer:299) INFO: 70/70epoch started. Estimated time to finish: 3 minutes and 55.77 seconds
+[gpu11:0/2] 2024-06-10 17:34:35,290 (trainer:365) INFO: 70epoch results: [train] iter_time=0.003, forward_time=0.148, loss_ctc=50.684, loss_att=35.305, acc=0.837, loss=39.918, backward_time=0.197, grad_norm=9.156, clip=93.671, loss_scale=2.621e+05, optim_step_time=0.029, optim0_lr0=0.002, train_time=1.162, time=1 minute and 33.68 seconds, total_count=5530, gpu_max_cached_mem_GB=19.268, [valid] loss_ctc=17.221, cer_ctc=0.049, loss_att=11.045, acc=0.918, cer=0.050, wer=0.632, loss=12.898, time=1 minute and 29.49 seconds, total_count=840, gpu_max_cached_mem_GB=19.268, [att_plot] time=1 minute and 39.32 seconds, total_count=0, gpu_max_cached_mem_GB=19.268
+[gpu11:0/2] 2024-06-10 17:34:39,540 (trainer:431) INFO: There are no improvements in this epoch
+[gpu11:0/2] 2024-06-10 17:34:39,564 (trainer:487) INFO: The model files were removed: exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/60epoch.pth
+[gpu11:0/2] 2024-06-10 17:34:39,564 (trainer:505) INFO: The training was finished at 70 epochs 
+[gpu11:0/2] 2024-06-10 17:34:39,565 (average_nbest_models:69) INFO: Averaging 10best models: criterion="valid.acc": exp/asr_train_discrete_asr_e_branchformer1_raw_wavlm_large_21_km500_bpe_rm6000_bpe_ts5000/valid.acc.ave_10best.pth
+# Accounting: time=8328 threads=1
+# Ended (code 0) at Mon Jun 10 17:34:45 IST 2024, elapsed time 8328 seconds
