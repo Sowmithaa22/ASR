@@ -1,0 +1,30 @@
+def read_file(file_path):
+    """Reads a text file and returns a list of utterance IDs."""
+    ids = []
+    with open(file_path, 'r') as file:
+        for line in file:
+            parts = line.split()
+            if parts:  # Ensure line is not empty
+                utterance_id = parts[0]
+                ids.append(utterance_id)
+    return ids
+
+def compare_utterance_ids(file1_ids, file2_ids):
+    """Compares the utterance IDs from two files line by line and returns the number of mismatches."""
+    mismatches = 0
+    for id1, id2 in zip(file1_ids, file2_ids):
+        if id1 != id2:
+            mismatches += 1
+            print(f"Mismatch: {id1} != {id2}")
+    
+    return mismatches
+
+if __name__ == "__main__":
+    # Set the paths of the files here
+    file1_path = '/nlsasfs/home/nltm-pilot/malavika/Sowmithaa/espnet/egs2/librispeech_100/asr2/data/valid/spk2utt'
+    file2_path = '/nlsasfs/home/nltm-pilot/malavika/Sowmithaa/espnet/egs2/librispeech_100/asr2/data/valid/wav.scp'
+    file1_ids = read_file(file1_path)
+    file2_ids = read_file(file2_path)
+
+    mismatches = compare_utterance_ids(file1_ids, file2_ids)
+    print(f"\nNumber of mismatches: {mismatches}")
