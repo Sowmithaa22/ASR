@@ -1,0 +1,5 @@
+rsync --partial --append -avz full path_source full path_detn
+wc -l arun@10.24.6.120/speech
+head -n 5
+watch -n1 queue -u akshaya
+ssh scn3-10g
